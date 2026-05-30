@@ -1,0 +1,64 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import Newsletter from '../components/Newsletter.astro';
+
+const all = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+const featured = all.find((p) => p.data.featured) ?? all[0];
+const rest = all.filter((p) => p.id !== featured?.id).slice(0, 6);
+
+const f = featured.data;
+const fDate = f.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+<BaseLayout>
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Slow rituals · Clean ingredients · Real results</p>
+      <h1>The quiet art of<br /><em>glass skin.</em></h1>
+      <p class="lede">A K-beauty journal for people who want the honest version — what actually works, what's just packaging, and the small daily rituals that add up to that lit-from-within glow.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href={`/posts/${featured.id}/`}>Start reading</a>
+        <a class="btn btn-ghost" href="#newsletter">Get the weekly letter</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <section>
+      <div class="sec-head">
+        <h2>This week's ritual</h2>
+        <a href="/category/routines/">Browse all posts →</a>
+      </div>
+      <a class="featured" href={`/posts/${featured.id}/`}>
+        <div class="art" aria-hidden="true">
+          {f.hangul && <span class="hangul">{f.hangul}</span>}
+        </div>
+        <div class="body">
+          <span class="kicker">{f.kicker ?? f.category}</span>
+          <h3>{f.title}</h3>
+          <p>{f.description}</p>
+          <div class="meta">
+            <span>{f.author}</span><span class="dot"></span>
+            <span>{f.readMinutes} min read</span><span class="dot"></span>
+            <span>{fDate}</span>
+          </div>
+        </div>
+      </a>
+    </section>
+
+    <section>
+      <div class="sec-head">
+        <h2>Latest from the journal</h2>
+        <a href="#newsletter">Never miss one →</a>
+      </div>
+      <div class="grid">
+        {rest.map((post) => <PostCard post={post} />)}
+      </div>
+    </section>
+
+    <Newsletter />
+  </div>
+</BaseLayout>

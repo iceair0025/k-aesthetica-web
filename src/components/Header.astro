@@ -1,0 +1,23 @@
+---
+import { NAV } from '../consts';
+const path = Astro.url.pathname;
+---
+<header class="site">
+  <div class="wrap nav">
+    <a class="brand" href="/" aria-label="K-Aesthetica home">
+      <span class="mark">K<em>·</em>Aesthetica</span>
+      <span class="tag">K-Beauty Journal</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      {NAV.map((item) => (
+        <a
+          href={item.href}
+          class={item.hideSm ? 'hide-sm' : undefined}
+          aria-current={path === item.href ? 'page' : undefined}
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+  </div>
+</header>

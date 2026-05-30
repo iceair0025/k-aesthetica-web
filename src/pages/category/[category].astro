@@ -1,0 +1,43 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+
+const CATEGORIES = ['Routines', 'Reviews', 'Ingredients', 'Guides'] as const;
+
+export async function getStaticPaths() {
+  const cats = ['Routines', 'Reviews', 'Ingredients', 'Guides'];
+  return cats.map((c) => ({ params: { category: c.toLowerCase() } }));
+}
+
+const { category } = Astro.params;
+const label = CATEGORIES.find((c) => c.toLowerCase() === category) ?? category;
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft && data.category.toLowerCase() === category)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const blurbs: Record<string, string> = {
+  Routines: 'Step-by-step rituals — the lazy versions that actually stick.',
+  Reviews: 'Honest, long-term verdicts on the products worth your money.',
+  Ingredients: 'The science, in plain English. What each hero ingredient really does.',
+  Guides: 'Bigger-picture explainers to anchor your whole routine.',
+};
+---
+<BaseLayout title={`${label}`} description={blurbs[label as string] ?? `${label} from K-Aesthetica.`}>
+  <div class="wrap">
+    <section class="hero" style="padding-bottom:30px;">
+      <p class="eyebrow">Category</p>
+      <h1 class="serif" style="font-size:clamp(38px,6vw,64px);font-weight:600;margin:0 0 12px;">{label}</h1>
+      <p class="lede">{blurbs[label as string]}</p>
+    </section>
+
+    {posts.length > 0 ? (
+      <div class="grid">
+        {posts.map((post) => <PostCard post={post} />)}
+      </div>
+    ) : (
+      <p style="color:var(--muted);margin-bottom:70px;">No posts here yet — check back soon.</p>
+    )}
+  </div>
+</BaseLayout>

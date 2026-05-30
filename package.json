@@ -1,0 +1,19 @@
+{
+  "name": "k-aesthetica-web",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "K-Aesthetica — a K-beauty journal",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.5.0",
+    "@astrojs/rss": "^4.0.11",
+    "@astrojs/sitemap": "^3.3.0"
+  }
+}

@@ -1,0 +1,20 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+}
+const { post } = Astro.props;
+const { title, description, category, kicker, thumb, readMinutes } = post.data;
+---
+<a class="card" href={`/posts/${post.id}/`}>
+  <div class={`thumb ${thumb}`}></div>
+  <div class="c-body">
+    <span class="kicker">{kicker ?? category}</span>
+    <h3>{title}</h3>
+    <p>{description}</p>
+    <div class="meta">
+      <span>{category}</span><span class="dot"></span><span>{readMinutes} min</span>
+    </div>
+  </div>
+</a>

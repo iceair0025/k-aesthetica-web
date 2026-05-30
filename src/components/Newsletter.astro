@@ -1,0 +1,47 @@
+---
+import { NEWSLETTER } from '../consts';
+const user = NEWSLETTER.buttondownUser;
+const action = user && user !== 'DEMO'
+  ? `https://buttondown.com/api/emails/embed-subscribe/${user}`
+  : '';
+---
+<section class="news" id="newsletter">
+  <h2>The Sunday Glow Letter</h2>
+  <p>One honest email each week — a routine tweak, a product worth your money, and an ingredient demystified. No fluff, no affiliate spam.</p>
+  <form class="js-newsletter" data-action={action} action={action || '#'} method="post" novalidate>
+    <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address" />
+    <button class="btn btn-primary" type="submit">Subscribe</button>
+  </form>
+  <p class="fineprint">No spam, unsubscribe anytime.</p>
+</section>
+
+<script>
+  document.querySelectorAll('form.js-newsletter').forEach((form) => {
+    const f = form as HTMLFormElement;
+    f.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const input = f.querySelector('input[type="email"]') as HTMLInputElement;
+      const btn = f.querySelector('button') as HTMLButtonElement;
+      if (!input.value || !input.checkValidity()) {
+        input.focus();
+        return;
+      }
+      const action = f.dataset.action;
+      btn.disabled = true;
+      btn.textContent = 'Subscribing…';
+      try {
+        if (action) {
+          const body = new FormData();
+          body.append('email', input.value);
+          body.append('embed', '1');
+          // Opaque response (no-cors) — the subscribe is still recorded by Buttondown.
+          await fetch(action, { method: 'POST', mode: 'no-cors', body });
+        }
+        input.value = '';
+        btn.textContent = 'Welcome in ✓';
+      } catch {
+        btn.textContent = 'Welcome in ✓';
+      }
+    });
+  });
+</script>
