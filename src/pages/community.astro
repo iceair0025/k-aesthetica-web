@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Newsletter from '../components/Newsletter.astro';
+import { COMMUNITY } from '../consts';
+
+const discord = COMMUNITY.discordInvite;
+---
+<BaseLayout title="Community" description="Join the K-Aesthetica community — share your verdicts, swap routines, and ask the questions your skin actually has.">
+  <section class="hero" style="padding-bottom:24px;">
+    <div class="wrap">
+      <p class="eyebrow">Community</p>
+      <h1 class="serif" style="font-size:clamp(38px,6vw,68px);font-weight:600;margin:0 0 18px;line-height:1.05;">Skincare is better<br />with company.</h1>
+      <p class="lede">We're building a calm, honest corner of the K-beauty world — no hype, no judgment, just people figuring out their skin together. Here's how to join in.</p>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="feature-grid">
+      <div class="feature">
+        <div class="ic">💬</div>
+        <h3>Comment on any post</h3>
+        <p>Every article has a discussion below it. Tried the routine? Disagree with a review? Sign in with GitHub and say so.</p>
+        <a class="flink" href="/category/reviews/">Browse posts to discuss →</a>
+      </div>
+      <div class="feature">
+        <div class="ic">⭐</div>
+        <h3>Share your verdict</h3>
+        <p>Submit a product review tagged with <em>your</em> skin type — so the next person knows if it'll work for skin like theirs, not just in general.</p>
+        <a class="flink" href="/reviews/">See community reviews →</a>
+      </div>
+      <div class="feature">
+        <div class="ic">🌿</div>
+        <h3>Hang out on Discord</h3>
+        <p>The day-to-day chatter — shelfies, empties, "help me fix my barrier," and product hauls — lives in our Discord. Drop in.</p>
+        {discord
+          ? <a class="flink" href={discord} target="_blank" rel="noopener">Join the Discord →</a>
+          : <span class="flink" style="color:var(--muted);cursor:default;">Opening soon →</span>}
+      </div>
+    </div>
+
+    <div class="cta-band">
+      <h2>Come say hi on Discord</h2>
+      <p>Real-time chat with people on the same skincare wavelength. Shelfie Sundays, honest product talk, and a barrier-repair support group we didn't know we needed.</p>
+      {discord
+        ? <a class="btn btn-primary" href={discord} target="_blank" rel="noopener">Join the Discord</a>
+        : <>
+            <button class="btn btn-primary" disabled style="opacity:.55;cursor:not-allowed;">Invite coming soon</button>
+            <p class="disabled-note">The server's being set up — check back shortly.</p>
+          </>}
+    </div>
+
+    <div class="house-rules" style="max-width:680px;margin:0 auto 70px;">
+      <div class="sec-head"><h2>House rules</h2></div>
+      <div class="prose" style="margin-top:8px;">
+        <ul>
+          <li><strong>Be kind.</strong> Everyone's skin and budget is different. No shaming products, routines, or faces.</li>
+          <li><strong>Share experience, not prescriptions.</strong> "This worked for my dry skin" — yes. "You must use this" — no. Nothing here is medical advice.</li>
+          <li><strong>Disclose freebies.</strong> If a brand gifted or paid you, say so.</li>
+          <li><strong>No miracle claims or before/after pressure.</strong> Skincare is maintenance, not a competition.</li>
+        </ul>
+      </div>
+    </div>
+
+    <Newsletter />
+  </div>
+</BaseLayout>

@@ -18,4 +18,19 @@ const posts = defineCollection({
   }),
 });
 
-export const collections = { posts };
+const reviews = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/reviews' }),
+  schema: z.object({
+    product: z.string(),
+    brand: z.string(),
+    type: z.enum(['Cleanser', 'Toner', 'Essence', 'Serum', 'Moisturizer', 'Sunscreen', 'Mask', 'Other']),
+    rating: z.number().min(1).max(5),
+    skinType: z.enum(['Dry', 'Oily', 'Combination', 'Normal', 'Sensitive']),
+    reviewer: z.string(),
+    verdict: z.string(),
+    pubDate: z.coerce.date(),
+    featured: z.boolean().default(false),
+  }),
+});
+
+export const collections = { posts, reviews };

@@ -4,6 +4,7 @@ import type { MarkdownHeading } from 'astro';
 import BaseLayout from './BaseLayout.astro';
 import PostCard from '../components/PostCard.astro';
 import Newsletter from '../components/Newsletter.astro';
+import Comments from '../components/Comments.astro';
 
 interface Props {
   post: CollectionEntry<'posts'>;
@@ -66,6 +67,10 @@ const shareReddit = `https://www.reddit.com/submit?url=${encodeURIComponent(url)
       </div>
     </div>
   </article>
+
+  <div class="wrap">
+    <Comments />
+  </div>
 
   {related.length > 0 && (
     <section class="wrap related">

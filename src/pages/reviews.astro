@@ -1,0 +1,95 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { COMMUNITY } from '../consts';
+
+const reviews = (await getCollection('reviews')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const SKIN_TYPES = ['Dry', 'Oily', 'Combination', 'Normal', 'Sensitive'];
+const formUrl = COMMUNITY.reviewsFormUrl;
+
+const bodies = await Promise.all(
+  reviews.map(async (r) => {
+    const { Content } = await render(r);
+    return { entry: r, Content };
+  })
+);
+
+function stars(n: number) {
+  return { full: '★'.repeat(n), empty: '☆'.repeat(5 - n) };
+}
+---
+<BaseLayout title="Community Reviews" description="Real product reviews from the K-Aesthetica community — each one tagged with the reviewer's skin type, so you know if it'll work for skin like yours.">
+  <section class="hero" style="padding-bottom:20px;">
+    <div class="wrap">
+      <p class="eyebrow">Community Reviews</p>
+      <h1 class="serif" style="font-size:clamp(36px,6vw,64px);font-weight:600;margin:0 0 16px;line-height:1.06;">Will it work for <em style="color:var(--rose-deep);font-style:italic;">your</em> skin?</h1>
+      <p class="lede">Honest verdicts from real people — each tagged with the reviewer's skin type. Filter by yours to cut through the "works for everyone" noise.</p>
+      <div class="hero-actions">
+        {formUrl
+          ? <a class="btn btn-primary" href={formUrl} target="_blank" rel="noopener">Share your verdict</a>
+          : <button class="btn btn-primary" disabled style="opacity:.55;cursor:not-allowed;">Submissions opening soon</button>}
+        <a class="btn btn-ghost" href="/community/">About the community</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="filters" role="group" aria-label="Filter reviews by skin type">
+      <button class="chip" data-skin="all" aria-pressed="true">All skin types</button>
+      {SKIN_TYPES.map((s) => <button class="chip" data-skin={s} aria-pressed="false">{s}</button>)}
+    </div>
+
+    {reviews.length > 0 ? (
+      <div class="review-grid" id="review-grid">
+        {bodies.map(({ entry, Content }) => {
+          const d = entry.data;
+          const s = stars(d.rating);
+          return (
+            <article class="review" data-skin={d.skinType}>
+              <div class="r-top">
+                <div>
+                  <div class="r-brand">{d.brand}</div>
+                  <h3>{d.product}</h3>
+                </div>
+                <div class="stars" aria-label={`${d.rating} out of 5`}>{s.full}<span class="empty">{s.empty}</span></div>
+              </div>
+              <p class="verdict">"{d.verdict}"</p>
+              <div class="r-body"><Content /></div>
+              <div class="r-foot">
+                <span class="badge">{d.skinType} skin</span>
+                <span class="badge type">{d.type}</span>
+                <span class="dot"></span>
+                <span>{d.reviewer}</span>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+      <p class="empty-state" id="no-results" hidden>No reviews for that skin type yet — be the first to add one!</p>
+    ) : (
+      <p class="empty-state">No community reviews yet. {formUrl ? 'Be the first to share one!' : 'Submissions open soon.'}</p>
+    )}
+  </div>
+</BaseLayout>
+
+<script>
+  const chips = document.querySelectorAll<HTMLButtonElement>('.chip');
+  const cards = document.querySelectorAll<HTMLElement>('.review');
+  const noResults = document.getElementById('no-results');
+  chips.forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const skin = chip.dataset.skin;
+      chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+      let visible = 0;
+      cards.forEach((card) => {
+        const show = skin === 'all' || card.dataset.skin === skin;
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      if (noResults) noResults.hidden = visible !== 0;
+    });
+  });
+</script>
